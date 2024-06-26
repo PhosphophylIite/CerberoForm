@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro ASOINCO</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script>
+        // Función que se ejecuta cuando el DOM carga por completo
+        document.addEventListener("DOMContentLoaded", function() {
+            // Realiza un query para la lista de empresas
+            fetch('/empresas')
+                .then(response => response.json())
+                .then(data => {
+                    // Rellena el select de empresas con los datos obtenidos
+                    const empresaSelect = document.getElementById('empresa');
+                    const defaultOption = document.createElement('option');
+                    defaultOption.value = "";
+                    defaultOption.text = "Seleccione una empresa";
+                    empresaSelect.add(defaultOption);
+
+                    data.forEach(empresa => {
+                        const option = document.createElement('option');
+                        option.value = empresa.empId;
+                        option.text = empresa.empNombre;
+                        empresaSelect.add(option);
+                    });
+                    
+                    // Llama a la función para activar/desactivar campos según la empresa seleccionada
+                    toggleFields();
+                })
+                .catch(error => console.error('Error fetching empresas:', error));
+        });
+        
+        // Función para activar o desactivar los campos de cargo y área si el usuario selecciona la opción por defecto o no aplica
+        function toggleFields() {
+            var empresaField = document.getElementById('empresa');
+            var cargoField = document.getElementById('cargo');
+            var areaField = document.getElementById('area');
+
+            if (empresaField.value === "" || empresaField.value === "1") {
+                cargoField.disabled = true;
+                areaField.disabled = true;
+                cargoField.value = "";
+                areaField.value = "";
+            } else {
+                cargoField.disabled = false;
+                areaField.disabled = false;
+            }
+        }
+
+        // Función para manejar el envío del formulario
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            const sexoField = document.getElementById('sexo');
+            const empresaField = document.getElementById('empresa');
+
+            // Validaciones básicas de campos
+            if (sexoField.value === "") {
+                alert('Por favor, seleccione un sexo.');
+                return;
+            }
+            if (empresaField.value === "") {
+                alert('Por favor, seleccione una empresa.');
+                return;
+            }
+
+            // Recolecta los datos del formulario y los envía al servidor
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData.entries());
+            fetch('/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Redirecciona la página si el registro es exitoso
+                    window.location.href = data.redirectUrl;
+                } else {
+                    console.error('Error al registrar:', data);
+                    alert('Error al registrar');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <form onsubmit="handleFormSubmit(event)">
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" name="asiNombre" maxlength="50" required>
+            
+            <label for="apellido">Apellido:</label>
+            <input type="text" id="apellido" name="asiApellido" maxlength="50" required>
+            
+            <label for="rut">RUT:</label>
+            <input type="text" id="rut" name="asiRut" maxlength="10" required>
+            
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="asiEmail" maxlength="255" required>
+            
+            <label for="numero">Número:</label>
+            <input type="text" id="numero" name="asiNumero" maxlength="11" required>
+            
+            <label for="empresa">Empresa (opcional):</label>
+            <select id="empresa" name="asiEmpresa" oninput="toggleFields()">
+            </select>
+            
+            <label for="cargo">Cargo:</label>
+            <input type="text" id="cargo" name="asiCargo" maxlength="255" disabled>
+            
+            <label for="area">Área:</label>
+            <input type="text" id="area" name="asiArea" maxlength="255" disabled>
+            
+            <label for="sexo">Genero:</label>
+            <select id="sexo" name="asiSexo" required>
+                <option value="">Seleccione su Genero</option>
+                <option value="M">Masculino</option>
+                <option value="F">Femenino</option>
+                <option value="O">Otro</option>
+            </select>
+            
+            <input type="submit" value="Registrar">
+        </form>
+    </div>
+</body>
+</html>

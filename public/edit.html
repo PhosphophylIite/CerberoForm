@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro Exitoso</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <style>
+        .message {
+            background-color: #2a5298;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            max-width: 600px;
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        .message h1 {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .message p {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        .message img {
+            display: block;
+            margin: auto;
+            max-width: 150px;
+        }
+        .message .footer {
+            font-size: 14px;
+            color: #cccccc;
+            margin-top: 20px;
+        }
+        @media (max-width: 600px) {
+            .message {
+                padding: 20px;
+                max-width: 90%;
+            }
+            .message h1 {
+                font-size: 24px;
+            }
+            .message p {
+                font-size: 16px;
+            }
+            .message img {
+                max-width: 120px;
+            }
+            .message .footer {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="message">
+            <h1>Bienvenido, <span id="nombre"></span>!</h1>
+            <p>Gracias por registrarte para la Expo ASOINCO. Aquí tienes tu código QR que te pedirán en la entrada:</p>
+            <img id="qrCode" alt="Código QR">
+            <div class="footer">Si tienes alguna pregunta, no dudes en contactarnos.</div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const nombre = urlParams.get('nombre');
+            const qrCode = urlParams.get('qrCode');
+
+            if (nombre) {
+                document.getElementById('nombre').textContent = decodeURIComponent(nombre);
+            }
+            if (qrCode) {
+                document.getElementById('qrCode').src = decodeURIComponent(qrCode);
+            }
+        });
+    </script>
+</body>
+</html>
